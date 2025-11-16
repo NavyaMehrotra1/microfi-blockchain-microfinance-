@@ -85,7 +85,7 @@ const HomePage = () => {
                 <div className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent mb-2">
                   {stat.value}
                 </div>
-                <div className="text-slate-600">{stat.label}</div>
+                <div className="text-slate-600 dark:text-slate-400">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -115,12 +115,12 @@ const HomePage = () => {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
-                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                    <h3 className="text-xl font-semibold text-slate-900">
                       {feature.title}
                     </h3>
                     <Tooltip content={feature.tooltip} icon />
                   </div>
-                  <p className="text-slate-600 dark:text-slate-400">{feature.description}</p>
+                  <p className="text-slate-600">{feature.description}</p>
                 </div>
               </div>
             </div>
@@ -170,7 +170,7 @@ const HomePage = () => {
           </div>
 
           <div className="text-center mt-12">
-            <Link to="/how-it-works" className="text-primary-600 hover:text-primary-700 font-semibold flex items-center justify-center space-x-2">
+            <Link to="/how-it-works" className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold flex items-center justify-center space-x-2">
               <span>Learn more about how MicroFi works</span>
               <ArrowRight className="w-5 h-5" />
             </Link>

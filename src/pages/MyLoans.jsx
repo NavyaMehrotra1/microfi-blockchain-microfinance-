@@ -5,7 +5,7 @@ import { formatSOL } from '../lib/utils'
 import Tooltip from '../components/Tooltip'
 
 const MyLoans = () => {
-  const { wallet } = useWallet()
+  const { wallet, balance, refreshBalance } = useWallet()
   const [activeTab, setActiveTab] = useState('borrowed') // borrowed, lent
 
   // Mock data - in production, fetch from blockchain
@@ -51,6 +51,11 @@ const MyLoans = () => {
     },
   ]
 
+  // Calculate total borrowed and lent amounts
+  const totalBorrowedAmount = borrowedLoans.reduce((sum, loan) => sum + loan.amount, 0)
+  const totalLentAmount = lentLoans.reduce((sum, loan) => sum + loan.amount, 0)
+  const netBalance = totalBorrowedAmount - totalLentAmount
+
   const stats = {
     borrowed: {
       total: borrowedLoans.reduce((sum, loan) => sum + loan.amount, 0),
@@ -69,8 +74,8 @@ const MyLoans = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         <div className="card max-w-md mx-auto">
           <AlertCircle className="w-16 h-16 text-amber-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Connect Your Wallet</h2>
-          <p className="text-slate-600">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Connect Your Wallet</h2>
+          <p className="text-slate-600 dark:text-slate-400">
             Please connect your Phantom wallet to view your loans.
           </p>
         </div>
@@ -82,20 +87,20 @@ const MyLoans = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-slate-900 mb-2">My Loans</h1>
-        <p className="text-lg text-slate-600">
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">My Loans</h1>
+        <p className="text-lg text-slate-600 dark:text-slate-400">
           Track your borrowed and lent loans, payments, and earnings
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-2 mb-8 border-b border-slate-200">
+      <div className="flex space-x-2 mb-8 border-b border-slate-200 dark:border-slate-700">
         <button
           onClick={() => setActiveTab('borrowed')}
           className={`px-6 py-3 font-semibold transition-all ${
             activeTab === 'borrowed'
-              ? 'text-primary-600 border-b-2 border-primary-600'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           Borrowed Loans
@@ -104,8 +109,8 @@ const MyLoans = () => {
           onClick={() => setActiveTab('lent')}
           className={`px-6 py-3 font-semibold transition-all ${
             activeTab === 'lent'
-              ? 'text-primary-600 border-b-2 border-primary-600'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           Lent Loans
@@ -180,8 +185,28 @@ const MyLoans = () => {
       {/* Loans List */}
       <div className="space-y-6">
         {activeTab === 'borrowed' ? (
-          borrowedLoans.length > 0 ? (
-            borrowedLoans.map((loan) => (
+          <>
+            {borrowedLoans.length > 0 && (
+              <div className="card bg-blue-50 border-blue-200">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-slate-900 mb-2">💰 Balance Calculation</h3>
+                    <div className="text-sm text-slate-700 space-y-1">
+                      <p>Borrowed: <span className="font-bold text-green-600">+{formatSOL(totalBorrowedAmount)} SOL</span></p>
+                      <p>Lent Out: <span className="font-bold text-red-600">-{formatSOL(totalLentAmount)} SOL</span></p>
+                      <div className="border-t border-slate-300 my-2 pt-2">
+                        <p className="font-bold">Net Balance: <span className="text-primary-600">{formatSOL(netBalance)} SOL</span></p>
+                      </div>
+                      <p className="text-xs text-slate-600 mt-2">
+                        Your wallet balance reflects borrowed funds minus lent amounts.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {borrowedLoans.length > 0 ? (
+              borrowedLoans.map((loan) => (
               <div key={loan.id} className="card">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
                   <div>
@@ -239,7 +264,8 @@ const MyLoans = () => {
             <div className="card text-center py-12">
               <p className="text-slate-600">You haven't borrowed any loans yet.</p>
             </div>
-          )
+          )}
+          </>
         ) : (
           lentLoans.length > 0 ? (
             lentLoans.map((loan) => (

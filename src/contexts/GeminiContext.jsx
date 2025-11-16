@@ -20,9 +20,10 @@ export const GeminiProvider = ({ children }) => {
       
       // Add user message to history
       const userMessage = { role: 'user', content: message }
-      setChatHistory(prev => [...prev, userMessage])
+      const updatedHistory = [...chatHistory, userMessage]
+      setChatHistory(updatedHistory)
 
-      // Call backend API
+      // Call backend API with updated history
       const response = await fetch('http://localhost:3001/api/gemini/chat', {
         method: 'POST',
         headers: {
@@ -30,7 +31,7 @@ export const GeminiProvider = ({ children }) => {
         },
         body: JSON.stringify({
           message,
-          history: chatHistory,
+          history: updatedHistory,
         }),
       })
 

@@ -69,13 +69,21 @@ const LoanMarketplace = () => {
     { label: 'Active Loans', value: loans.filter(l => l.status === 'active').length, icon: <Clock className="w-5 h-5" /> },
   ]
 
+  // Filter loans based on selected filter
+  const filteredLoans = loans.filter(loan => {
+    if (filter === 'all') return true
+    if (filter === 'low-risk') return loan.riskScore === 'Low'
+    if (filter === 'high-return') return loan.interestRate >= 9
+    return true
+  })
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">Loan Marketplace</h1>
-          <p className="text-lg text-slate-600">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Loan Marketplace</h1>
+          <p className="text-lg text-slate-600 dark:text-slate-400">
             Browse available microloans or create your own loan request
           </p>
         </div>
@@ -94,8 +102,8 @@ const LoanMarketplace = () => {
           <div className="flex items-start space-x-3">
             <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-1" />
             <div>
-              <h3 className="font-semibold text-amber-900 mb-1">Connect Your Wallet</h3>
-              <p className="text-amber-800">
+              <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">Connect Your Wallet</h3>
+              <p className="text-amber-800 dark:text-amber-200">
                 Connect your Phantom wallet to request loans or fund existing loan requests.
               </p>
             </div>
@@ -122,13 +130,13 @@ const LoanMarketplace = () => {
 
       {/* Filters */}
       <div className="flex items-center space-x-2 mb-6">
-        <span className="text-sm font-medium text-slate-700">Filter:</span>
+        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Filter:</span>
         <button
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             filter === 'all'
               ? 'bg-primary-600 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           All Loans
@@ -138,7 +146,7 @@ const LoanMarketplace = () => {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             filter === 'low-risk'
               ? 'bg-primary-600 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           Low Risk
@@ -148,7 +156,7 @@ const LoanMarketplace = () => {
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             filter === 'high-return'
               ? 'bg-primary-600 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
           }`}
         >
           High Return
@@ -177,9 +185,15 @@ const LoanMarketplace = () => {
 
       {/* Loan Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {loans.map((loan) => (
-          <LoanCard key={loan.id} loan={loan} />
-        ))}
+        {filteredLoans.length > 0 ? (
+          filteredLoans.map((loan) => (
+            <LoanCard key={loan.id} loan={loan} />
+          ))
+        ) : (
+          <div className="col-span-2 text-center py-12">
+            <p className="text-slate-400 text-lg">No loans match the selected filter</p>
+          </div>
+        )}
       </div>
 
       {/* Create Loan Modal */}

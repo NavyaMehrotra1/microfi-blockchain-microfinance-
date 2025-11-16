@@ -11,31 +11,16 @@ export const useTheme = () => {
 }
 
 export const ThemeProvider = ({ children }) => {
-  const [isDark, setIsDark] = useState(false)
+  const [isDark] = useState(true) // Always dark mode
 
   useEffect(() => {
-    // Check localStorage for saved theme preference
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme === 'dark') {
-      setIsDark(true)
-      document.documentElement.classList.add('dark')
-    }
+    // Force dark mode always
+    document.documentElement.classList.add('dark')
   }, [])
 
-  const toggleTheme = () => {
-    setIsDark(!isDark)
-    if (!isDark) {
-      document.documentElement.classList.add('dark')
-      localStorage.setItem('theme', 'dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('theme', 'light')
-    }
-  }
-
   const value = {
-    isDark,
-    toggleTheme,
+    isDark: true,
+    toggleTheme: () => {}, // No-op function
   }
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

@@ -166,6 +166,58 @@ const SocialImpact = () => {
       </section>
 
 
+      {/* Traditional vs Modern Microfinance */}
+      <section className="py-20 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
+                From Traditional to Transformative
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 mb-6">
+                Traditional microfinance has helped millions of women entrepreneurs, but it came with challenges: high fees, slow processing, and limited access.
+              </p>
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start space-x-3">
+                  <div className="bg-red-100 dark:bg-red-900/30 p-2 rounded-lg">
+                    <span className="text-red-600 dark:text-red-400 text-xl">❌</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">Traditional Microfinance</h3>
+                    <p className="text-slate-600 dark:text-slate-400">20-30% interest rates, weeks to process, limited to local areas</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
+                    <span className="text-green-600 dark:text-green-400 text-xl">✅</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">MicroFi Platform</h3>
+                    <p className="text-slate-600 dark:text-slate-400">8-15% rates, instant funding, global access, AI-powered guidance</p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-lg font-semibold text-primary-600 dark:text-primary-400">
+                We're not replacing microfinance - we're empowering it with blockchain and AI to reach even more women entrepreneurs worldwide.
+              </p>
+            </div>
+            <div className="relative">
+              <img 
+                src="https://lightcastlepartners.com/wp-content/uploads/2023/04/microfinance-min.jpg" 
+                alt="Traditional microfinance - women entrepreneurs in developing countries"
+                className="rounded-2xl shadow-2xl w-full h-auto"
+              />
+              <div className="absolute -bottom-6 -right-6 bg-gradient-to-r from-primary-600 to-accent-600 text-white p-6 rounded-xl shadow-xl max-w-xs">
+                <p className="font-bold text-lg mb-2">Building on Success</p>
+                <p className="text-sm opacity-90">
+                  Traditional microfinance proved the model works. Now we're making it faster, cheaper, and more accessible.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Impact Areas */}
       <section className="py-20 bg-white dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

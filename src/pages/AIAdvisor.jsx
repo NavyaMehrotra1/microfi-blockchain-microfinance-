@@ -50,9 +50,9 @@ const AIAdvisor = () => {
           <div className="bg-gradient-to-br from-primary-600 to-accent-600 p-3 rounded-xl">
             <Sparkles className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-slate-900">AI Financial Advisor</h1>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white">AI Financial Advisor</h1>
         </div>
-        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+        <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
           Get personalized financial advice powered by Google Gemini AI. 
           Ask anything about loans, savings, or financial planning!
         </p>

@@ -12,7 +12,8 @@ export const useWallet = () => {
 
 export const WalletProvider = ({ children }) => {
   const [wallet, setWallet] = useState(null)
-  const [balance, setBalance] = useState(0)
+  // Initial balance: 2.5 SOL borrowed - 2.3 SOL lent = 0.2 SOL
+  const [balance, setBalance] = useState(0.2)
   const [isConnecting, setIsConnecting] = useState(false)
   const [platformInfo, setPlatformInfo] = useState(null)
 
@@ -40,19 +41,28 @@ export const WalletProvider = ({ children }) => {
         method: 'POST',
       })
       
+      if (!response.ok) {
+        throw new Error('Failed to create account')
+      }
+      
       const data = await response.json()
+      
+      if (!data.publicKey) {
+        throw new Error('No public key returned')
+      }
       
       setWallet({
         publicKey: data.publicKey,
         connected: true,
       })
 
-      // Get initial balance
-      await refreshBalance(data.publicKey)
+      // Set initial balance: 2.5 SOL borrowed - 2.3 SOL lent = 0.2 SOL
+      // In production, this would come from blockchain
+      setBalance(0.2)
       
     } catch (error) {
       console.error('Error connecting wallet:', error)
-      alert('Failed to create account. Please try again.')
+      alert('Failed to create account. Make sure backend is running.')
     } finally {
       setIsConnecting(false)
     }
@@ -69,9 +79,11 @@ export const WalletProvider = ({ children }) => {
     try {
       const response = await fetch(`http://localhost:3001/api/solana/balance/${publicKey}`)
       const data = await response.json()
-      setBalance(data.balance)
+      setBalance(data.balance || 0)
     } catch (error) {
       console.error('Error refreshing balance:', error)
+      // Set balance to 0 if fetch fails
+      setBalance(0)
     }
   }
 
@@ -122,6 +134,7 @@ export const WalletProvider = ({ children }) => {
   const value = {
     wallet,
     balance,
+    setBalance, // Expose setBalance for demo purposes
     connection: null, // Not needed for server-side
     isConnecting,
     connectWallet,

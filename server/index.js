@@ -17,20 +17,25 @@ app.use(express.json())
 solana.initializePlatformWallet()
 
 // Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+const apiKey = process.env.GEMINI_API_KEY?.trim()
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null
 
 // Helper to get working model
 function getModel() {
-  // Try different model names based on API availability
-  try {
-    return genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' })
-  } catch (e) {
-    try {
-      return genAI.getGenerativeModel({ model: 'gemini-pro' })
-    } catch (e2) {
-      return genAI.getGenerativeModel({ model: 'models/gemini-pro' })
-    }
+  if (!genAI) {
+    throw new Error('Gemini API key not configured')
   }
+  
+  // Use gemini-pro which is the most stable model
+  return genAI.getGenerativeModel({ 
+    model: 'gemini-pro',
+    generationConfig: {
+      temperature: 0.7,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 1024,
+    },
+  })
 }
 
 // Root route
@@ -80,34 +85,44 @@ app.post('/api/gemini/chat', async (req, res) => {
     // Try Gemini API first, fallback to mock responses
     try {
       const model = getModel()
-      const chat = model.startChat({
-        history: [
-          {
-            role: 'user',
-            parts: [{ text: FINANCIAL_ADVISOR_CONTEXT }],
-          },
-          {
-            role: 'model',
-            parts: [{ text: 'I understand. I\'m here to help you with financial advice for microfinance, loans, and blockchain concepts. How can I assist you today?' }],
-          },
-          ...history.map(msg => ({
+      
+      // Build conversation history (system context + previous messages only, NOT the current message)
+      const conversationHistory = [
+        {
+          role: 'user',
+          parts: [{ text: FINANCIAL_ADVISOR_CONTEXT }],
+        },
+        {
+          role: 'model',
+          parts: [{ text: 'I understand. I\'m here to help you with financial advice for microfinance, loans, and blockchain concepts. How can I assist you today?' }],
+        },
+      ]
+      
+      // Add previous messages from history (the frontend sends history WITH the new message, so exclude the last one)
+      if (history && history.length > 1) {
+        // Exclude the last message (current user message) since we'll send it separately
+        history.slice(0, -1).forEach(msg => {
+          conversationHistory.push({
             role: msg.role === 'user' ? 'user' : 'model',
             parts: [{ text: msg.content }],
-          })),
-        ],
-        generationConfig: {
-          maxOutputTokens: 1000,
-          temperature: 0.7,
-        },
+          })
+        })
+      }
+      
+      const chat = model.startChat({
+        history: conversationHistory,
       })
 
+      // Send the current message
+      console.log('📤 Sending to Gemini:', message)
       const result = await chat.sendMessage(message)
       const response = result.response.text()
+      console.log('✅ Gemini response received')
       return res.json({ response })
     } catch (apiError) {
       // Fallback to intelligent mock responses for demo
-      console.log('Using fallback AI responses for demo')
-      const response = generateMockResponse(message)
+      console.log('⚠️ Gemini API error, using fallback:', apiError.message)
+      const response = generateMockResponse(message, history)
       return res.json({ response })
     }
   } catch (error) {
@@ -120,8 +135,11 @@ app.post('/api/gemini/chat', async (req, res) => {
 })
 
 // Mock response generator for demo purposes
-function generateMockResponse(message) {
+function generateMockResponse(message, history = []) {
   const lowerMessage = message.toLowerCase()
+  
+  // Check if this is a follow-up question based on history
+  const isFollowUp = history && history.length > 2
   
   if (lowerMessage.includes('microloan') || lowerMessage.includes('loan amount')) {
     return "For a small business, I'd recommend starting with a microloan between $200-$1,000. This amount is manageable to repay while providing enough capital to make a meaningful impact. Consider factors like your monthly revenue, existing expenses, and the specific purpose of the loan. On our platform, you can request loans with flexible terms (6-24 months) and competitive interest rates (8-15% APR). Would you like help calculating what monthly payment would work for your budget?"
@@ -144,11 +162,26 @@ function generateMockResponse(message) {
   }
   
   if (lowerMessage.includes('start') || lowerMessage.includes('begin') || lowerMessage.includes('first')) {
-    return "Great question! Here's how to get started: 1) Install the Phantom wallet extension and create a wallet, 2) Switch to Solana Devnet (for testing), 3) Get free test SOL from the faucet, 4) Connect your wallet to MicroFi, 5) Browse available loans or create a loan request. The whole process takes about 5 minutes. Would you like me to explain any of these steps in more detail?"
+    return "Great question! Here's how to get started: 1) Connect your account on MicroFi, 2) Click 'Get Test SOL' to add funds to your wallet, 3) Browse available loans on the Marketplace page, 4) Or create your own loan request if you need to borrow. The whole process takes just a few minutes. Would you like me to explain any of these steps in more detail?"
   }
   
-  // Default response
-  return "That's a great question! MicroFi combines AI and blockchain to make microfinance accessible to everyone. Our platform offers instant loan funding, transparent terms, and AI-powered financial advice. Whether you're looking to borrow or lend, we can help you understand the process, calculate payments, assess risks, and make informed decisions. What specific aspect of microfinance would you like to learn more about?"
+  // Handle follow-up questions with more variety
+  if (isFollowUp) {
+    const responses = [
+      `Based on what we've discussed, ${lowerMessage.includes('more') ? 'let me add more details' : 'here\'s what you should know'}: MicroFi makes it easy to participate in decentralized finance. ${lowerMessage.includes('how') ? 'The process is straightforward - just connect your wallet and you\'re ready to go!' : 'You can start with small amounts and scale up as you get comfortable.'}`,
+      `That's a good follow-up question! ${lowerMessage.includes('what') ? 'The key thing to understand is' : 'To clarify'}: Our platform uses blockchain technology to ensure transparency and security. ${lowerMessage.includes('why') ? 'This eliminates the need for traditional intermediaries.' : 'All transactions are recorded on-chain.'}`,
+      `Great question! ${lowerMessage.includes('can') ? 'Yes, you can' : 'Let me explain'}: MicroFi offers flexible options for both borrowers and lenders. ${lowerMessage.includes('should') ? 'I\'d recommend starting small and learning as you go.' : 'Feel free to explore the platform at your own pace.'}`
+    ]
+    return responses[Math.floor(Math.random() * responses.length)]
+  }
+  
+  // Default response only for first message
+  if (!isFollowUp) {
+    return "That's a great question! MicroFi combines AI and blockchain to make microfinance accessible to everyone. Our platform offers instant loan funding, transparent terms, and AI-powered financial advice. Whether you're looking to borrow or lend, we can help you understand the process, calculate payments, assess risks, and make informed decisions. What specific aspect of microfinance would you like to learn more about?"
+  }
+  
+  // Generic contextual response for follow-ups
+  return `I understand your question about "${message}". MicroFi is designed to be user-friendly and accessible. ${lowerMessage.includes('help') ? 'I\'m here to guide you through any aspect of the platform.' : 'Feel free to ask about loans, interest rates, blockchain technology, or how to get started!'}`
 }
 
 // Loan risk assessment endpoint

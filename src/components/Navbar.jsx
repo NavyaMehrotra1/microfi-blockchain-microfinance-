@@ -1,15 +1,13 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Wallet, Menu, X, Sparkles, Moon, Sun } from 'lucide-react'
+import { Wallet, Menu, X, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useWallet } from '../contexts/ServerWalletContext'
-import { useTheme } from '../contexts/ThemeContext'
 import { truncateAddress, formatSOL } from '../lib/utils'
 import Tooltip from './Tooltip'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { wallet, balance, connectWallet, disconnectWallet, isConnecting } = useWallet()
-  const { isDark, toggleTheme } = useTheme()
   const location = useLocation()
 
   const navLinks = [
@@ -55,23 +53,8 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Wallet Button & Theme Toggle */}
+          {/* Wallet Button */}
           <div className="hidden md:flex items-center space-x-3">
-            {/* Dark Mode Toggle */}
-            <Tooltip content={isDark ? "Switch to light mode" : "Switch to dark mode"}>
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                aria-label="Toggle theme"
-              >
-                {isDark ? (
-                  <Sun className="w-5 h-5 text-amber-500" />
-                ) : (
-                  <Moon className="w-5 h-5 text-slate-600" />
-                )}
-              </button>
-            </Tooltip>
-
             {wallet ? (
               <div className="flex items-center space-x-3">
                 <Tooltip content="Your SOL balance on Solana devnet">
