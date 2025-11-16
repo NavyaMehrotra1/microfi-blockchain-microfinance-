@@ -1,7 +1,7 @@
 import { TrendingUp, Clock, Target, Shield } from 'lucide-react'
 import { formatSOL, calculateMonthlyPayment } from '../lib/utils'
 import Tooltip from './Tooltip'
-import { useWallet } from '../contexts/WalletContext'
+import { useWallet } from '../contexts/ServerWalletContext'
 import { useState } from 'react'
 
 const LoanCard = ({ loan }) => {

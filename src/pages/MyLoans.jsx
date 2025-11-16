@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { TrendingUp, Clock, CheckCircle, AlertCircle, DollarSign } from 'lucide-react'
-import { useWallet } from '../contexts/WalletContext'
+import { useWallet } from '../contexts/ServerWalletContext'
 import { formatSOL } from '../lib/utils'
 import Tooltip from '../components/Tooltip'
 

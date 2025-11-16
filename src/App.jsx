@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { WalletProvider } from './contexts/WalletContext'
+import { WalletProvider } from './contexts/ServerWalletContext'
 import { GeminiProvider } from './contexts/GeminiContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import Navbar from './components/Navbar'
@@ -9,6 +9,7 @@ import MyLoans from './pages/MyLoans'
 import AIAdvisor from './pages/AIAdvisor'
 import HowItWorks from './pages/HowItWorks'
 import SocialImpact from './pages/SocialImpact'
+import Transactions from './pages/Transactions'
 import Footer from './components/Footer'
 
 function App() {
@@ -25,8 +26,9 @@ function App() {
                   <Route path="/marketplace" element={<LoanMarketplace />} />
                   <Route path="/my-loans" element={<MyLoans />} />
                   <Route path="/ai-advisor" element={<AIAdvisor />} />
-                  <Route path="/how-it-works" element={<HowItWorks />} />
+                  <Route path="/transactions" element={<Transactions />} />
                   <Route path="/impact" element={<SocialImpact />} />
+                  <Route path="/how-it-works" element={<HowItWorks />} />
                 </Routes>
               </main>
               <Footer />

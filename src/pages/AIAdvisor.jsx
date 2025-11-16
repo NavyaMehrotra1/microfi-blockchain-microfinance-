@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Send, Bot, User, Sparkles, Loader, Trash2 } from 'lucide-react'
 import { useGemini } from '../contexts/GeminiContext'
-import { useWallet } from '../contexts/WalletContext'
+import { useWallet } from '../contexts/ServerWalletContext'
 import Tooltip from '../components/Tooltip'
 
 const AIAdvisor = () => {

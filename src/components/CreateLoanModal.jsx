@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, Sparkles, AlertCircle } from 'lucide-react'
-import { useWallet } from '../contexts/WalletContext'
+import { useWallet } from '../contexts/ServerWalletContext'
 import { useGemini } from '../contexts/GeminiContext'
 import { calculateMonthlyPayment } from '../lib/utils'
 import Tooltip from './Tooltip'

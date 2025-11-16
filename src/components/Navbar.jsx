@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Wallet, Menu, X, Sparkles, Moon, Sun } from 'lucide-react'
 import { useState } from 'react'
-import { useWallet } from '../contexts/WalletContext'
+import { useWallet } from '../contexts/ServerWalletContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { truncateAddress, formatSOL } from '../lib/utils'
 import Tooltip from './Tooltip'
@@ -17,6 +17,7 @@ const Navbar = () => {
     { path: '/marketplace', label: 'Marketplace' },
     { path: '/my-loans', label: 'My Loans' },
     { path: '/ai-advisor', label: 'AI Advisor' },
+    { path: '/transactions', label: 'Transactions' },
     { path: '/impact', label: 'Our Impact' },
     { path: '/how-it-works', label: 'How It Works' },
   ]
@@ -88,14 +89,14 @@ const Navbar = () => {
                 </button>
               </div>
             ) : (
-              <Tooltip content="Connect your Phantom wallet to start using MicroFi">
+              <Tooltip content="Create your Solana account to start using MicroFi">
                 <button
                   onClick={connectWallet}
                   disabled={isConnecting}
                   className="flex items-center space-x-2 bg-gradient-to-r from-primary-600 to-accent-600 text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50"
                 >
                   <Wallet className="w-4 h-4" />
-                  <span>{isConnecting ? 'Connecting...' : 'Connect Wallet'}</span>
+                  <span>{isConnecting ? 'Creating Account...' : 'Connect Account'}</span>
                 </button>
               </Tooltip>
             )}
@@ -148,7 +149,7 @@ const Navbar = () => {
                   disabled={isConnecting}
                   className="w-full btn-primary"
                 >
-                  {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+                  {isConnecting ? 'Creating Account...' : 'Connect Account'}
                 </button>
               )}
             </div>
